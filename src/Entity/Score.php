@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\ScoreRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -17,38 +15,30 @@ class Score
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $temps = null;
+    private ?int $score = null;
 
     #[ORM\Column]
     private ?int $error = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $game_date = null;
+    private ?\DateTimeInterface $played_on = null;
 
-    /**
-     * @var Collection<int, user>
-     */
-    #[ORM\ManyToOne(targetEntity: user::class, mappedBy: 'score_user')]
-    private Collection $user;
-
-    public function __construct()
-    {
-        $this->user = new ArrayCollection();
-    }
+    #[ORM\ManyToOne(inversedBy: 'user_score')]
+    private ?user $user = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getTemps(): ?int
+    public function getScore(): ?int
     {
-        return $this->temps;
+        return $this->score;
     }
 
-    public function setTemps(int $temps): static
+    public function setScore(int $score): static
     {
-        $this->temps = $temps;
+        $this->score = $score;
 
         return $this;
     }
@@ -65,44 +55,26 @@ class Score
         return $this;
     }
 
-    public function getGameDate(): ?\DateTimeInterface
+    public function getPlayedOn(): ?\DateTimeInterface
     {
-        return $this->game_date;
+        return $this->played_on;
     }
 
-    public function setGameDate(\DateTimeInterface $game_date): static
+    public function setPlayedOn(\DateTimeInterface $played_on): static
     {
-        $this->game_date = $game_date;
+        $this->played_on = $played_on;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, user>
-     */
-    public function getUser(): Collection
+    public function getUser(): ?user
     {
         return $this->user;
     }
 
-    public function addIdUser(user $User): static
+    public function setUser(?user $user): static
     {
-        if (!$this->id_user->contains($User)) {
-            $this->user->add($User);
-            $User->setScoreUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeIdUser(user $User): static
-    {
-        if ($this->user->removeElement($User)) {
-            // set the owning side to null (unless already changed)
-            if ($User->getScoreUser() === $this) {
-                $User->setScoreUser(null);
-            }
-        }
+        $this->user = $user;
 
         return $this;
     }

@@ -3,10 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
 class User
 {
     #[ORM\Id]
@@ -26,8 +28,19 @@ class User
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
-    #[ORM\OneToMany(inversedBy: 'user')]
-    private ?Score $score_user = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $creation_date = null;
+
+    /**
+     * @var Collection<int, Score>
+     */
+    #[ORM\OneToMany(targetEntity: Score::class, mappedBy: 'user')]
+    private Collection $user_score;
+
+    public function __construct()
+    {
+        $this->user_score = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -82,14 +95,44 @@ class User
         return $this;
     }
 
-    public function getScoreUser(): ?Score
+    public function getCreationDate(): ?\DateTimeInterface
     {
-        return $this->score_user;
+        return $this->creation_date;
     }
 
-    public function setScoreUser(?Score $score_user): static
+    public function setCreationDate(\DateTimeInterface $creation_date): static
     {
-        $this->score_user = $score_user;
+        $this->creation_date = $creation_date;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Score>
+     */
+    public function getUserScore(): Collection
+    {
+        return $this->user_score;
+    }
+
+    public function addUserScore(Score $userScore): static
+    {
+        if (!$this->user_score->contains($userScore)) {
+            $this->user_score->add($userScore);
+            $userScore->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserScore(Score $userScore): static
+    {
+        if ($this->user_score->removeElement($userScore)) {
+            // set the owning side to null (unless already changed)
+            if ($userScore->getUser() === $this) {
+                $userScore->setUser(null);
+            }
+        }
 
         return $this;
     }
