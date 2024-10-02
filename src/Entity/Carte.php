@@ -21,7 +21,7 @@ class Carte
 
     #[ORM\ManyToOne(inversedBy: 'theme_carte')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?theme $theme = null;
+    private ?Theme $theme = null;
 
     public function getId(): ?int
     {
@@ -52,12 +52,12 @@ class Carte
         return $this;
     }
 
-    public function getTheme(): ?theme
+    public function getTheme(): ?Theme
     {
         return $this->theme;
     }
 
-    public function setTheme(?theme $theme): static
+    public function setTheme(?Theme $theme): static
     {
         $this->theme = $theme;
 
