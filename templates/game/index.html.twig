@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Jeu de Memory</h1>
+    <div id="game-board" class="grid">
+        {# Boucle pour afficher chaque carte du jeu #}
+        {% for carte in cartes %}
+            <div class="card" data-id="{{ carte.id }}" onclick="flipCard(this)" style="border: 1px solid black; width: 100px; height: 100px;">
+                <img src="{{ carte.lien }}" alt="Carte" style="width:100px;height:100px; display:none;"> {# Assurez-vous que l'image est cachée par défaut #}
+            </div>
+        {% endfor %}
+    </div>
+
+    <script src="{{ asset('js/game.js') }}"></script>
+{% endblock %}
